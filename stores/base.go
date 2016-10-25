@@ -1,5 +1,5 @@
 // Package storages allows multiple implementation on how to store short URLs.
-package storages
+package stores
 
 type IStorage interface {
 	Code() string

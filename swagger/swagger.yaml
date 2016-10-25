@@ -1,0 +1,116 @@
+consumes:
+- application/json
+definitions:
+  GoaExampleShort_url:
+    description: Media for Short url (default view)
+    example:
+      longUrl: Ex molestias.
+      shortUrl: Temporibus sequi sint.
+    properties:
+      longUrl:
+        example: Ex molestias.
+        type: string
+      shortUrl:
+        example: Temporibus sequi sint.
+        type: string
+    required:
+    - shortUrl
+    title: 'Mediatype identifier: application/vnd.goa.example.short_url+json'
+    type: object
+  short_url_create_payload:
+    description: Payload for creating shortened url
+    example:
+      url: Quas ipsam dolor.
+    properties:
+      url:
+        example: Quas ipsam dolor.
+        type: string
+    required:
+    - url
+    title: short_url_create_payload
+    type: object
+info:
+  title: URL Shortener
+  version: "1.0"
+paths:
+  /:
+    post:
+      description: Create a short url
+      operationId: short_url#create_short_url
+      parameters:
+      - description: Payload for creating shortened url
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/short_url_create_payload'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/GoaExampleShort_url'
+        "400":
+          description: Bad Request
+      schemes:
+      - http
+      summary: create_short_url short_url
+      tags:
+      - short_url
+  /dec/{short_url_hash}:
+    get:
+      description: Get a short url by hash
+      operationId: short_url#get_short_url
+      parameters:
+      - in: path
+        name: short_url_hash
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/GoaExampleShort_url'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      schemes:
+      - http
+      summary: get_short_url short_url
+      tags:
+      - short_url
+  /red/{short_url_hash}:
+    get:
+      description: Redirect a short url
+      operationId: short_url#redirect_short_url
+      parameters:
+      - in: path
+        name: short_url_hash
+        required: true
+        type: string
+      responses:
+        "301":
+          description: Moved Permanently
+          headers:
+            Location:
+              description: The URI to the provided short URL
+              type: string
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      schemes:
+      - http
+      summary: redirect_short_url short_url
+      tags:
+      - short_url
+produces:
+- application/json
+responses:
+  BadRequest:
+    description: Bad Request
+  NotFound:
+    description: Not Found
+schemes:
+- http
+swagger: "2.0"
