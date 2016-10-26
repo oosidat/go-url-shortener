@@ -26,14 +26,17 @@ func (s *Filesystem) Code() string {
 	return strconv.FormatUint(uint64(len(files)+1), 36)
 }
 
-func (s *Filesystem) Save(url string) string {
+func (s *Filesystem) Save(url string) (string, error) {
 	code := s.Code()
 
 	s.Lock()
-	ioutil.WriteFile(filepath.Join(s.Root, code), []byte(url), 0744)
+	err := ioutil.WriteFile(filepath.Join(s.Root, code), []byte(url), 0744)
+	if err != nil {
+		return "", err
+	}
 	s.Unlock()
 
-	return code
+	return code, err
 }
 
 func (s *Filesystem) Load(code string) (string, error) {
