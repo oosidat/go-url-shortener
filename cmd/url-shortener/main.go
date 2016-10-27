@@ -24,6 +24,8 @@ func main() {
 	cfg := stores.Config{
 		Cluster:  []string{"127.0.0.1"},
 		Keyspace: "example",
+		Worker:   0,
+		Seed:     999,
 	}
 	store := &stores.Cassandra{}
 	err := store.Init(cfg)

@@ -2,7 +2,7 @@
 package stores
 
 type Store interface {
-	Code() string
+	Code() (string, error)
 	Save(string) (string, error)
 	Load(string) (string, error)
 }
