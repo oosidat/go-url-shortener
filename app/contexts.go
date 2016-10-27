@@ -48,6 +48,12 @@ func (ctx *CreateShortURLShortURLContext) BadRequest() error {
 	return nil
 }
 
+// InternalServerError sends a HTTP response with status code 500.
+func (ctx *CreateShortURLShortURLContext) InternalServerError() error {
+	ctx.ResponseData.WriteHeader(500)
+	return nil
+}
+
 // GetShortURLShortURLContext provides the short_url get_short_url action context.
 type GetShortURLShortURLContext struct {
 	context.Context

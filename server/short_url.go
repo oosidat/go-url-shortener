@@ -9,21 +9,24 @@ import (
 // ShortURLController implements the short_url resource.
 type ShortURLController struct {
 	*goa.Controller
-	store stores.IStorage
+	store stores.Store
 }
 
 // NewShortURLController creates a short_url controller.
-func NewShortURLController(service *goa.Service, storage stores.IStorage) *ShortURLController {
+func NewShortURLController(service *goa.Service, storage stores.Store) *ShortURLController {
 	return &ShortURLController{
 		Controller: service.NewController("ShortURLController"),
-		store: storage,
+		store:      storage,
 	}
 }
 
 // CreateShortURL runs the create_short_url action.
 func (c *ShortURLController) CreateShortURL(ctx *app.CreateShortURLShortURLContext) error {
 	longURL := ctx.Payload.URL
-	shortURL := c.store.Save(longURL)
+	shortURL, err := c.store.Save(longURL)
+	if err != nil {
+		return ctx.BadRequest()
+	}
 	res := &app.GoaExampleShortURL{LongURL: &longURL, ShortURL: shortURL}
 	return ctx.Created(res)
 }

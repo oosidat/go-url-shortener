@@ -18,22 +18,32 @@ func (s *Filesystem) Init(root string) error {
 	return os.MkdirAll(s.Root, 0744)
 }
 
-func (s *Filesystem) Code() string {
+func (s *Filesystem) Code() (string, error) {
 	s.Lock()
-	files, _ := ioutil.ReadDir(s.Root)
+	files, err := ioutil.ReadDir(s.Root)
 	s.Unlock()
 
-	return strconv.FormatUint(uint64(len(files)+1), 36)
+	if err != nil {
+		return "", err
+	}
+
+	return strconv.FormatUint(uint64(len(files)+1), 36), err
 }
 
-func (s *Filesystem) Save(url string) string {
-	code := s.Code()
+func (s *Filesystem) Save(url string) (string, error) {
+	code, codeGenerationErr := s.Code()
+	if codeGenerationErr != nil {
+		return "", codeGenerationErr
+	}
 
 	s.Lock()
-	ioutil.WriteFile(filepath.Join(s.Root, code), []byte(url), 0744)
+	err := ioutil.WriteFile(filepath.Join(s.Root, code), []byte(url), 0744)
+	if err != nil {
+		return "", err
+	}
 	s.Unlock()
 
-	return code
+	return code, err
 }
 
 func (s *Filesystem) Load(code string) (string, error) {

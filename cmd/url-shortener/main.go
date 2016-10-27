@@ -1,14 +1,12 @@
 package main
 
 import (
-	"log"
-	"path/filepath"
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/middleware"
-	"github.com/mitchellh/go-homedir"
 	"github.com/oosidat/go-url-shortener/app"
-	"github.com/oosidat/go-url-shortener/stores"
 	"github.com/oosidat/go-url-shortener/server"
+	"github.com/oosidat/go-url-shortener/stores"
+	"log"
 )
 
 func main() {
@@ -22,12 +20,19 @@ func main() {
 	service.Use(middleware.Recover())
 
 	// Mount "short_url" controller
-	dir, _ := homedir.Dir()
-	store := &stores.Filesystem{}
-	err := store.Init(filepath.Join(dir, "go-url-shortener"))
+
+	cfg := stores.Config{
+		Cluster:  []string{"127.0.0.1"},
+		Keyspace: "example",
+		Worker:   0,
+		Seed:     999,
+	}
+	store := &stores.Cassandra{}
+	err := store.Init(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer store.Close()
 
 	c := server.NewShortURLController(service, store)
 	app.MountShortURLController(service, c)

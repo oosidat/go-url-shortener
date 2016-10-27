@@ -60,8 +60,8 @@ func MountShortURLController(service *goa.Service, ctrl ShortURLController) {
 		}
 		return ctrl.CreateShortURL(rctx)
 	}
-	service.Mux.Handle("POST", "/", ctrl.MuxHandler("CreateShortURL", h, unmarshalCreateShortURLShortURLPayload))
-	service.LogInfo("mount", "ctrl", "ShortURL", "action", "CreateShortURL", "route", "POST /")
+	service.Mux.Handle("POST", "/links", ctrl.MuxHandler("CreateShortURL", h, unmarshalCreateShortURLShortURLPayload))
+	service.LogInfo("mount", "ctrl", "ShortURL", "action", "CreateShortURL", "route", "POST /links")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -75,8 +75,8 @@ func MountShortURLController(service *goa.Service, ctrl ShortURLController) {
 		}
 		return ctrl.GetShortURL(rctx)
 	}
-	service.Mux.Handle("GET", "/dec/:short_url_hash", ctrl.MuxHandler("GetShortURL", h, nil))
-	service.LogInfo("mount", "ctrl", "ShortURL", "action", "GetShortURL", "route", "GET /dec/:short_url_hash")
+	service.Mux.Handle("GET", "/links/decode/:short_url_hash", ctrl.MuxHandler("GetShortURL", h, nil))
+	service.LogInfo("mount", "ctrl", "ShortURL", "action", "GetShortURL", "route", "GET /links/decode/:short_url_hash")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -90,8 +90,8 @@ func MountShortURLController(service *goa.Service, ctrl ShortURLController) {
 		}
 		return ctrl.RedirectShortURL(rctx)
 	}
-	service.Mux.Handle("GET", "/red/:short_url_hash", ctrl.MuxHandler("RedirectShortURL", h, nil))
-	service.LogInfo("mount", "ctrl", "ShortURL", "action", "RedirectShortURL", "route", "GET /red/:short_url_hash")
+	service.Mux.Handle("GET", "/links/redirect/:short_url_hash", ctrl.MuxHandler("RedirectShortURL", h, nil))
+	service.LogInfo("mount", "ctrl", "ShortURL", "action", "RedirectShortURL", "route", "GET /links/redirect/:short_url_hash")
 }
 
 // unmarshalCreateShortURLShortURLPayload unmarshals the request body into the context request data Payload field.
