@@ -46,7 +46,7 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 	}
 	tmp1 := new(CreateShortURLShortURLCommand)
 	sub = &cobra.Command{
-		Use:   `short_url ["/"]`,
+		Use:   `short_url ["/links"]`,
 		Short: ``,
 		Long: `
 
@@ -67,7 +67,7 @@ Payload example:
 	}
 	tmp2 := new(GetShortURLShortURLCommand)
 	sub = &cobra.Command{
-		Use:   `short_url ["/dec/SHORT_URL_HASH"]`,
+		Use:   `short_url ["/links/decode/SHORT_URL_HASH"]`,
 		Short: ``,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
 	}
@@ -81,7 +81,7 @@ Payload example:
 	}
 	tmp3 := new(RedirectShortURLShortURLCommand)
 	sub = &cobra.Command{
-		Use:   `short_url ["/red/SHORT_URL_HASH"]`,
+		Use:   `short_url ["/links/redirect/SHORT_URL_HASH"]`,
 		Short: ``,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp3.Run(c, args) },
 	}
@@ -250,7 +250,7 @@ func (cmd *CreateShortURLShortURLCommand) Run(c *client.Client, args []string) e
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = "/"
+		path = "/links"
 	}
 	var payload client.ShortURLCreatePayload
 	if cmd.Payload != "" {
@@ -283,7 +283,7 @@ func (cmd *GetShortURLShortURLCommand) Run(c *client.Client, args []string) erro
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/dec/%v", cmd.ShortURLHash)
+		path = fmt.Sprintf("/links/decode/%v", cmd.ShortURLHash)
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -309,7 +309,7 @@ func (cmd *RedirectShortURLShortURLCommand) Run(c *client.Client, args []string)
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/red/%v", cmd.ShortURLHash)
+		path = fmt.Sprintf("/links/redirect/%v", cmd.ShortURLHash)
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)

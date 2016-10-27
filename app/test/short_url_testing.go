@@ -64,7 +64,7 @@ func CreateShortURLShortURLBadRequest(t goatest.TInterface, ctx context.Context,
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/"),
+		Path: fmt.Sprintf("/links"),
 	}
 	req, err := http.NewRequest("POST", u.String(), nil)
 	if err != nil {
@@ -134,7 +134,7 @@ func CreateShortURLShortURLCreated(t goatest.TInterface, ctx context.Context, se
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/"),
+		Path: fmt.Sprintf("/links"),
 	}
 	req, err := http.NewRequest("POST", u.String(), nil)
 	if err != nil {
@@ -178,6 +178,76 @@ func CreateShortURLShortURLCreated(t goatest.TInterface, ctx context.Context, se
 	return rw, mt
 }
 
+// CreateShortURLShortURLInternalServerError runs the method CreateShortURL of the given controller with the given parameters and payload.
+// It returns the response writer so it's possible to inspect the response headers.
+// If ctx is nil then context.Background() is used.
+// If service is nil then a default service is created.
+func CreateShortURLShortURLInternalServerError(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ShortURLController, payload *app.ShortURLCreatePayload) http.ResponseWriter {
+	// Setup service
+	var (
+		logBuf bytes.Buffer
+		resp   interface{}
+
+		respSetter goatest.ResponseSetterFunc = func(r interface{}) { resp = r }
+	)
+	if service == nil {
+		service = goatest.Service(&logBuf, respSetter)
+	} else {
+		logger := log.New(&logBuf, "", log.Ltime)
+		service.WithLogger(goa.NewLogger(logger))
+		newEncoder := func(io.Writer) goa.Encoder { return respSetter }
+		service.Encoder = goa.NewHTTPEncoder() // Make sure the code ends up using this decoder
+		service.Encoder.Register(newEncoder, "*/*")
+	}
+
+	// Validate payload
+	err := payload.Validate()
+	if err != nil {
+		e, ok := err.(goa.ServiceError)
+		if !ok {
+			panic(err) // bug
+		}
+		if e.ResponseStatus() != 500 {
+			t.Errorf("unexpected payload validation error: %+v", e)
+		}
+		return nil
+	}
+
+	// Setup request context
+	rw := httptest.NewRecorder()
+	u := &url.URL{
+		Path: fmt.Sprintf("/links"),
+	}
+	req, err := http.NewRequest("POST", u.String(), nil)
+	if err != nil {
+		panic("invalid test " + err.Error()) // bug
+	}
+	prms := url.Values{}
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	goaCtx := goa.NewContext(goa.WithAction(ctx, "ShortURLTest"), rw, req, prms)
+	createShortURLCtx, err := app.NewCreateShortURLShortURLContext(goaCtx, service)
+	if err != nil {
+		panic("invalid test data " + err.Error()) // bug
+	}
+	createShortURLCtx.Payload = payload
+
+	// Perform action
+	err = ctrl.CreateShortURL(createShortURLCtx)
+
+	// Validate response
+	if err != nil {
+		t.Fatalf("controller returned %s, logs:\n%s", err, logBuf.String())
+	}
+	if rw.Code != 500 {
+		t.Errorf("invalid response status code: got %+v, expected 500", rw.Code)
+	}
+
+	// Return results
+	return rw
+}
+
 // GetShortURLShortURLBadRequest runs the method GetShortURL of the given controller with the given parameters.
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
@@ -203,7 +273,7 @@ func GetShortURLShortURLBadRequest(t goatest.TInterface, ctx context.Context, se
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/dec/%v", shortURLHash),
+		Path: fmt.Sprintf("/links/decode/%v", shortURLHash),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
@@ -260,7 +330,7 @@ func GetShortURLShortURLNotFound(t goatest.TInterface, ctx context.Context, serv
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/dec/%v", shortURLHash),
+		Path: fmt.Sprintf("/links/decode/%v", shortURLHash),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
@@ -317,7 +387,7 @@ func GetShortURLShortURLOK(t goatest.TInterface, ctx context.Context, service *g
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/dec/%v", shortURLHash),
+		Path: fmt.Sprintf("/links/decode/%v", shortURLHash),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
@@ -386,7 +456,7 @@ func RedirectShortURLShortURLBadRequest(t goatest.TInterface, ctx context.Contex
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/red/%v", shortURLHash),
+		Path: fmt.Sprintf("/links/redirect/%v", shortURLHash),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
@@ -443,7 +513,7 @@ func RedirectShortURLShortURLMovedPermanently(t goatest.TInterface, ctx context.
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/red/%v", shortURLHash),
+		Path: fmt.Sprintf("/links/redirect/%v", shortURLHash),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
@@ -500,7 +570,7 @@ func RedirectShortURLShortURLNotFound(t goatest.TInterface, ctx context.Context,
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/red/%v", shortURLHash),
+		Path: fmt.Sprintf("/links/redirect/%v", shortURLHash),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {

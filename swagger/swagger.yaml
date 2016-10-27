@@ -1,3 +1,4 @@
+basePath: /links
 consumes:
 - application/json
 definitions:
@@ -33,7 +34,7 @@ info:
   title: URL Shortener
   version: "1.0"
 paths:
-  /:
+  "":
     post:
       description: Create a short url
       operationId: short_url#create_short_url
@@ -51,12 +52,14 @@ paths:
             $ref: '#/definitions/GoaExampleShort_url'
         "400":
           description: Bad Request
+        "500":
+          description: Internal Server Error
       schemes:
       - http
       summary: create_short_url short_url
       tags:
       - short_url
-  /dec/{short_url_hash}:
+  /decode/{short_url_hash}:
     get:
       description: Get a short url by hash
       operationId: short_url#get_short_url
@@ -79,7 +82,7 @@ paths:
       summary: get_short_url short_url
       tags:
       - short_url
-  /red/{short_url_hash}:
+  /redirect/{short_url_hash}:
     get:
       description: Redirect a short url
       operationId: short_url#redirect_short_url
@@ -109,6 +112,8 @@ produces:
 responses:
   BadRequest:
     description: Bad Request
+  InternalServerError:
+    description: Internal Server Error
   NotFound:
     description: Not Found
 schemes:

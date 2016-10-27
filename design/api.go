@@ -11,6 +11,7 @@ func init() {
     dsl.Title("URL Shortener")
     dsl.Scheme("http")
     dsl.Version("1.0")
+    dsl.BasePath("/links")
     dsl.Produces("application/json")
     dsl.Consumes("application/json")
   })
@@ -18,7 +19,7 @@ func init() {
   dsl.Resource("short_url", func() {
     dsl.Action("get_short_url", func() {
       dsl.Description("Get a short url by hash")
-      dsl.Routing(dsl.GET("/dec/:short_url_hash"))
+      dsl.Routing(dsl.GET("/decode/:short_url_hash"))
       dsl.Response(goa.OK, func() {
         dsl.Media(ShortUrlMedia)
       })
@@ -28,7 +29,7 @@ func init() {
 
     dsl.Action("redirect_short_url", func() {
       dsl.Description("Redirect a short url")
-      dsl.Routing(dsl.GET("/red/:short_url_hash"))
+      dsl.Routing(dsl.GET("/redirect/:short_url_hash"))
       dsl.Response(goa.MovedPermanently, func() {
         dsl.Headers(func() {
           dsl.Header("Location", goa.String, func() {
@@ -46,6 +47,7 @@ func init() {
       dsl.Payload(ShortUrlCreatePayload)
       dsl.Response(goa.Created, ShortUrlMedia)
       dsl.Response(goa.BadRequest)
+      dsl.Response(goa.InternalServerError)
     })
 
   })
