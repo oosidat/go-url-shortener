@@ -1,12 +1,12 @@
 package main
 
 import (
-	"log"
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/middleware"
 	"github.com/oosidat/go-url-shortener/app"
-	"github.com/oosidat/go-url-shortener/stores"
 	"github.com/oosidat/go-url-shortener/server"
+	"github.com/oosidat/go-url-shortener/stores"
+	"log"
 )
 
 func main() {
@@ -22,7 +22,7 @@ func main() {
 	// Mount "short_url" controller
 
 	cfg := stores.Config{
-		Cluster: []string{"127.0.0.1"},
+		Cluster:  []string{"127.0.0.1"},
 		Keyspace: "example",
 	}
 	store := &stores.Cassandra{}

@@ -24,6 +24,11 @@ gen: $(projectpath) $(GOBIN)/goagen
 clean:
 	rm -rf $(projectpath)/test/client $(projectpath)/test/models $(projectpath)/client $(GOBIN) $(GOPATH) $(GOTOOL)
 
+fmt:
+	gofmt -w $(gopkgs)
+
+checks: $(GOBIN)/golint
+	go vet $(gopkgs)
 
 $(GOBIN)/goagen:
 	go get -d github.com/goadesign/goa/goagen

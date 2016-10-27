@@ -1,13 +1,13 @@
 package stores
 
-import(
-  "time"
-  "github.com/gocql/gocql"
-  "github.com/pkg/errors"
+import (
+	"github.com/gocql/gocql"
+	"github.com/pkg/errors"
+	"time"
 )
 
 const (
-  ShortURLTable = "short_urls"
+	ShortURLTable = "short_urls"
 )
 
 type Cassandra struct {
@@ -41,7 +41,7 @@ func (s *Cassandra) Init(cfg Config) error {
 	if err != nil {
 		return errors.Wrapf(err, "could not create cassandra session")
 	}
-  s.Session = session
+	s.Session = session
 	return err
 }
 
@@ -50,26 +50,26 @@ func (s *Cassandra) Code() string {
 }
 
 func (s *Cassandra) Save(url string) (string, error) {
-  code := s.Code()
-  insertQuery := "INSERT INTO example.short_urls (id, long_url) VALUES (?, ?)"
-  err := s.Session.Query(insertQuery, code, url).Exec()
-  if err != nil {
-    return "", err
-  }
-  return code, err
+	code := s.Code()
+	insertQuery := "INSERT INTO example.short_urls (id, long_url) VALUES (?, ?)"
+	err := s.Session.Query(insertQuery, code, url).Exec()
+	if err != nil {
+		return "", err
+	}
+	return code, err
 
 }
 
 func (s *Cassandra) Load(code string) (string, error) {
-  var longURL string
-  selectQuery := "SELECT long_url FROM example.short_urls WHERE id = ? LIMIT 1"
-  err := s.Session.Query(selectQuery, code).Consistency(gocql.One).Scan(&longURL);
-  if err != nil {
-    return "", err
-  }
-  return longURL, err
+	var longURL string
+	selectQuery := "SELECT long_url FROM example.short_urls WHERE id = ? LIMIT 1"
+	err := s.Session.Query(selectQuery, code).Consistency(gocql.One).Scan(&longURL)
+	if err != nil {
+		return "", err
+	}
+	return longURL, err
 }
 
 func (s *Cassandra) Close() {
-  s.Session.Close()
+	s.Session.Close()
 }

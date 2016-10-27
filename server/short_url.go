@@ -16,7 +16,7 @@ type ShortURLController struct {
 func NewShortURLController(service *goa.Service, storage stores.IStorage) *ShortURLController {
 	return &ShortURLController{
 		Controller: service.NewController("ShortURLController"),
-		store: storage,
+		store:      storage,
 	}
 }
 
