@@ -16,6 +16,9 @@ import "github.com/goadesign/goa"
 
 // Payload for creating shortened url
 type shortURLCreatePayload struct {
+	// The optional context for the url being shortened
+	Context map[string]string `form:"context,omitempty" json:"context,omitempty" xml:"context,omitempty"`
+	// The url to be shortened
 	URL *string `form:"url,omitempty" json:"url,omitempty" xml:"url,omitempty"`
 }
 
@@ -31,6 +34,9 @@ func (ut *shortURLCreatePayload) Validate() (err error) {
 // Publicize creates ShortURLCreatePayload from shortURLCreatePayload
 func (ut *shortURLCreatePayload) Publicize() *ShortURLCreatePayload {
 	var pub ShortURLCreatePayload
+	if ut.Context != nil {
+		pub.Context = ut.Context
+	}
 	if ut.URL != nil {
 		pub.URL = *ut.URL
 	}
@@ -39,6 +45,9 @@ func (ut *shortURLCreatePayload) Publicize() *ShortURLCreatePayload {
 
 // Payload for creating shortened url
 type ShortURLCreatePayload struct {
+	// The optional context for the url being shortened
+	Context map[string]string `form:"context,omitempty" json:"context,omitempty" xml:"context,omitempty"`
+	// The url to be shortened
 	URL string `form:"url" json:"url" xml:"url"`
 }
 

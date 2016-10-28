@@ -22,26 +22,24 @@ func NewShortURLController(service *goa.Service, storage stores.Store) *ShortURL
 
 // CreateShortURL runs the create_short_url action.
 func (c *ShortURLController) CreateShortURL(ctx *app.CreateShortURLShortURLContext) error {
-	longURL := ctx.Payload.URL
-	shortURL, err := c.store.Save(longURL)
+	shortURL, err := c.store.SavePayload(ctx.Payload)
 	if err != nil {
 		return ctx.BadRequest()
 	}
-	res := &app.GoaExampleShortURL{LongURL: &longURL, ShortURL: shortURL}
+	res := &app.GoaExampleShortURL{LongURL: &ctx.Payload.URL, ShortURL: shortURL}
 	return ctx.Created(res)
 }
 
 // GetShortURL runs the get_short_url action.
 func (c *ShortURLController) GetShortURL(ctx *app.GetShortURLShortURLContext) error {
 	shortURL := ctx.ShortURLHash
-	longURL, err := c.store.Load(shortURL)
+	res, err := c.store.LoadRecord(shortURL)
 
 	if err != nil {
 		return ctx.NotFound()
 	}
 
-	res := &app.GoaExampleShortURL{LongURL: &longURL, ShortURL: shortURL}
-	return ctx.OK(res)
+	return ctx.OK(&res)
 }
 
 // RedirectShortURL runs the redirect_short_url action.

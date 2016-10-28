@@ -18,8 +18,9 @@ import "github.com/goadesign/goa"
 //
 // Identifier: application/vnd.goa.example.short_url+json; view=default
 type GoaExampleShortURL struct {
-	LongURL  *string `form:"longUrl,omitempty" json:"longUrl,omitempty" xml:"longUrl,omitempty"`
-	ShortURL string  `form:"shortUrl" json:"shortUrl" xml:"shortUrl"`
+	Context  map[string]string `form:"context,omitempty" json:"context,omitempty" xml:"context,omitempty"`
+	LongURL  *string           `form:"longUrl,omitempty" json:"longUrl,omitempty" xml:"longUrl,omitempty"`
+	ShortURL string            `form:"shortUrl" json:"shortUrl" xml:"shortUrl"`
 }
 
 // Validate validates the GoaExampleShortURL media type instance.

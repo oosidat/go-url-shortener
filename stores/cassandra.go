@@ -3,6 +3,7 @@ package stores
 import (
 	"fmt"
 	"github.com/gocql/gocql"
+	"github.com/oosidat/go-url-shortener/app"
 	"github.com/pkg/errors"
 	"github.com/ventu-io/go-shortid"
 	"time"
@@ -79,7 +80,20 @@ func (s *Cassandra) Save(url string) (string, error) {
 		return "", err
 	}
 	return code, err
+}
 
+func (s *Cassandra) SavePayload(payload *app.ShortURLCreatePayload) (string, error) {
+	code, codeGenerationErr := s.Code()
+	if codeGenerationErr != nil {
+		return "", codeGenerationErr
+	}
+
+	insertQuery := fmt.Sprintf("INSERT INTO %s.%s (id, long_url, context) VALUES (?, ?, ?)", s.Keyspace, ShortURLTable)
+	err := s.Session.Query(insertQuery, code, payload.URL, payload.Context).Exec()
+	if err != nil {
+		return "", err
+	}
+	return code, err
 }
 
 func (s *Cassandra) Load(code string) (string, error) {
@@ -90,6 +104,20 @@ func (s *Cassandra) Load(code string) (string, error) {
 		return "", err
 	}
 	return longURL, err
+}
+
+func (s *Cassandra) LoadRecord(code string) (app.GoaExampleShortURL, error) {
+	var longURL string
+	var context map[string]string
+
+	selectQuery := fmt.Sprintf("SELECT long_url, context FROM %s.%s WHERE id = ? LIMIT 1", s.Keyspace, ShortURLTable)
+	err := s.Session.Query(selectQuery, code).Consistency(gocql.One).Scan(&longURL, &context)
+	if err != nil {
+		return app.GoaExampleShortURL{}, err
+	}
+
+	return app.GoaExampleShortURL{LongURL: &longURL, ShortURL: code, Context: context}, err
+
 }
 
 func (s *Cassandra) Close() {

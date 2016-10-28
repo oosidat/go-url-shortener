@@ -5,14 +5,23 @@ definitions:
   GoaExampleShort_url:
     description: Media for Short url (default view)
     example:
-      longUrl: Ex molestias.
-      shortUrl: Temporibus sequi sint.
+      context:
+        fizz: buzz
+        foo: bar
+      longUrl: https://github.com/oosidat/go-url-shortener
+      shortUrl: 8iLV0Z02q
     properties:
+      context:
+        additionalProperties: true
+        example:
+          fizz: buzz
+          foo: bar
+        type: object
       longUrl:
-        example: Ex molestias.
+        example: https://github.com/oosidat/go-url-shortener
         type: string
       shortUrl:
-        example: Temporibus sequi sint.
+        example: 8iLV0Z02q
         type: string
     required:
     - shortUrl
@@ -21,10 +30,21 @@ definitions:
   short_url_create_payload:
     description: Payload for creating shortened url
     example:
-      url: Quas ipsam dolor.
+      context:
+        fizz: buzz
+        foo: bar
+      url: https://github.com/oosidat/go-url-shortener
     properties:
+      context:
+        additionalProperties: true
+        description: The optional context for the url being shortened
+        example:
+          fizz: buzz
+          foo: bar
+        type: object
       url:
-        example: Quas ipsam dolor.
+        description: The url to be shortened
+        example: https://github.com/oosidat/go-url-shortener
         type: string
     required:
     - url

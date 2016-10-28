@@ -53,7 +53,11 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 Payload example:
 
 {
-   "url": "Quas ipsam dolor."
+   "context": {
+      "fizz": "buzz",
+      "foo": "bar"
+   },
+   "url": "https://github.com/oosidat/go-url-shortener"
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp1.Run(c, args) },
 	}
